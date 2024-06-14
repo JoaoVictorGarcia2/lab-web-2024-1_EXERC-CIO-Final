@@ -1,0 +1,256 @@
+openapi: 3.0.0
+info:
+  title: API de Cadastro de Livros e Autores
+  description: Esta API permite cadastrar, atualizar, listar e deletar livros e autores.
+  version: 1.1.0
+
+servers:
+  - url: https://api.exemplo.com/v1
+    description: Servidor de produção
+  - url: http://localhost:3000/v1
+    description: Servidor de desenvolvimento
+
+tags:
+  - name: Books
+    description: Operações relacionadas a livros
+  - name: Authors
+    description: Operações relacionadas a autores
+paths:
+  /books:
+    get:
+      tags: 
+        - Books
+      summary: Lista todos os livros
+      parameters:
+        - in: query
+          name: title
+          schema:
+            type: string
+          description: title of book
+        - in: query
+          name: author.name
+          schema:
+            type: string
+          description: Author
+      responses:
+        '200':
+          description: Lista de livros
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Book'
+    post:
+      summary: Adiciona um novo livro
+      tags: 
+        - Books
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewBook'
+      responses:
+        '201':
+          description: Livro criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+
+  /books/{id}:
+    get:
+      summary: Obtém os detalhes de um livro específico
+      tags: 
+        - Books
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do livro
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalhes do livro
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+        '404':
+          description: Livro não encontrado
+
+  /authors:
+    get:
+      summary: Lista todos os autores
+      tags: 
+        - Authors
+      responses:
+        '200':
+          description: Lista de autores
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Author'
+    post:
+      summary: Adiciona um novo autor
+      tags: 
+        - Authors
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAuthor'
+      responses:
+        '201':
+          description: Autor criado com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+
+  /authors/{id}:
+    get:
+      summary: Obtém os detalhes de um autor específico
+      tags: 
+        - Authors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do autor
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalhes do autor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Author'
+        '404':
+          description: Autor não encontrado
+   
+    delete:
+      summary: Remove um autor
+      tags: 
+        - Authors
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID do autor
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Autor removido com sucesso
+        '404':
+          description: Autor não encontrado
+
+components:
+  schemas:
+    Book:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '60c72b2f9b1d8e2a3c8e4d5a'
+        title:
+          type: string
+          example: 'O Senhor dos Anéis'
+        author:
+          type: object
+          properties:
+            id:
+              type: string
+              example: '60c72b2f9b1d8e2a3c8e4d5b'
+            name: 
+              type: string
+              example: "J.R.R. Tolkien"
+        publishedDate:
+          type: string
+          format: date
+          example: '1954-07-29'
+        isbn:
+          type: string
+          example: '978-3-16-148410-0'
+        summary:
+          type: string
+          example: 'Uma fantasia épica sobre a luta contra o mal na Terra-média.'
+      required:
+        - title
+        - authorId
+
+    NewBook:
+      type: object
+      properties:
+        title:
+          type: string
+          example: 'O Senhor dos Anéis'
+        authorId:
+          type: string
+          example: '60c72b2f9b1d8e2a3c8e4d5b'
+        publishedDate:
+          type: string
+          format: date
+          example: '1954-07-29'
+        isbn:
+          type: string
+          example: '978-3-16-148410-0'
+        summary:
+          type: string
+          example: 'Uma fantasia épica sobre a luta contra o mal na Terra-média.'
+      required:
+        - title
+        - authorId
+
+    Author:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '60c72b2f9b1d8e2a3c8e4d5b'
+        name:
+          type: string
+          example: 'J.R.R. Tolkien'
+        biography:
+          type: string
+          example: 'J.R.R. Tolkien foi um escritor, poeta, filólogo e professor universitário britânico.'
+        birthDate:
+          type: string
+          format: date
+          example: '1892-01-03'
+        books:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: "abc-123"
+              name: 
+                type: string
+                example: "Harry Potter"
+      required:
+        - name
+
+    NewAuthor:
+      type: object
+      properties:
+        name:
+          type: string
+          example: 'J.R.R. Tolkien'
+        biography:
+          type: string
+          example: 'J.R.R. Tolkien foi um escritor, poeta, filólogo e professor universitário britânico.'
+        birthDate:
+          type: string
+          format: date
+          example: '1892-01-03'
+      required:
+        - name
