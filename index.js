@@ -1,8 +1,15 @@
-const {server, plugins} = require('./server');
+const SwaggerUI = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+
+const { server, plugins } = require('./server');
+
+const express = require('express');
+const app = express();
+
+app.use('/api-docs', SwaggerUI.serve, SwaggerUI.setup(swaggerDocument));
 
 (async () => {
     try {
-        //register routes plugins
         await server.register(plugins);
 
         await server.start();
